@@ -51,12 +51,13 @@ def print_video_comment(video, n=10):
 
         if (publishedAt not in video):
             f = '{}\n{}\n{}\nグッド数: {} 返信数: {}\n{}\n'
-            print(f.format(video['title'],
-                           authorDisplayName,
-                           text,
-                           likeCount,
-                           totalReplyCount,
-                           publishedAt))
+            if stdout_print:
+                print(f.format(video['title'],
+                               authorDisplayName,
+                               text,
+                               likeCount,
+                               totalReplyCount,
+                               publishedAt))
         elif (video[publishedAt]['likeCount'] != likeCount or video[publishedAt]['totalReplyCount'] != totalReplyCount):
             f = '{}\n{}\n{}\nグッド数: {}→{} 返信数: {}→{}\n{}\n'
             message = f.format(video['title'],
@@ -67,7 +68,8 @@ def print_video_comment(video, n=10):
                                video[publishedAt]['totalReplyCount'],
                                totalReplyCount,
                                publishedAt)
-            print(message)
+            if stdout_print:
+                print(message)
             line_notify(message)
 
         if publishedAt not in video:
@@ -88,34 +90,41 @@ def print_video_comment(video, n=10):
 
     return cnt
 
+
 if len(sys.argv) < 2:
     print('Usage: jsonfile')
     exit()
 
-print(datetime.datetime.now())
+stdout_print = False
+if stdout_print:
+    print(datetime.datetime.now())
 for jsonfile in sys.argv[1:]:
     # read json
     with open(jsonfile, 'r') as file:
         data = json.load(file)
 
-    print(jsonfile)
+    if stdout_print:
+        print(jsonfile)
     cnt = 0
     for site in data['sites']:
         if site['video_id'] != '':
             try:
                 cnt2 = print_video_comment(site, n=100)
-                if cnt2:
-                    if cnt2 == 0:
-                        print('_', end='', flush=True)
+                if stdout_print:
+                    if cnt2:
+                        if cnt2 == 0:
+                            print('_', end='', flush=True)
+                        else:
+                            print('o', end='', flush=True)
+                        cnt += cnt2
                     else:
-                        print('o', end='', flush=True)
-                    cnt += cnt2
-                else:
-                    print('x', end='', flush=True)
+                        print('x', end='', flush=True)
             except Exception as exception:
-                print('e', end='', flush=True)
+                if stdout_print:
+                    print('e', end='', flush=True)
 
-    print('(%d)' % cnt)
+    if stdout_print:
+        print('(%d)' % cnt)
 
     with open(jsonfile, 'w') as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
