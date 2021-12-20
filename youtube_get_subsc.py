@@ -33,4 +33,5 @@ if __name__ == '__main__':
     for i, channel_id in enumerate(channels):
         d = youtube_channel_detail(channel_id, YOUTUBE_API_KEY)
         cnts['d{}'.format(i + 1)] = d['statistics']['subscriberCount']
+        #{'videoCount': '36', 'viewCount': '56262', 'subscriberCount': '338', ...}
     ambi.send(cnts)
