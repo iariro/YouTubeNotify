@@ -81,8 +81,8 @@ def convertVideoItems(video_items):
             'likes': int(item["statistics"]["likeCount"]) } for item in video_items}
 
 
-def like_count_diff(channelId):
-    with open('my_videos.json', 'r') as f:
+def like_count_diff(json_file, channelId):
+    with open(json_file, 'r') as f:
         video_items_json_old = json.load(f)
 
     youtube = get_authenticated_service('AIzaSyBuV44B4RZq90SnDs_GvCz7zXwrR34ixXI')
@@ -90,7 +90,7 @@ def like_count_diff(channelId):
     video_id_list = get_video_id_in_playlist(youtube, uploads_playlist_id)
     video_items = get_video_items(youtube, video_id_list)
     video_items_json = convertVideoItems(video_items)
-    with open('my_videos.json', 'w') as f:
+    with open(json_file, 'w') as f:
         json.dump(video_items_json, f, indent=4, ensure_ascii=False)
 
     diff = []
@@ -113,5 +113,6 @@ def line_notify(message):
     requests.post(url, headers=headers, data=payload)
 
 if __name__ == "__main__":
-    diff = like_count_diff('UCVD_BTWC0dmWPZOWagpEeiA')
+    json_file = '/home/pi/doc/private/python/youtube/my_videos.json'
+    diff = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA')
     line_notify('\n'.join(diff)):
