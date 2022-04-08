@@ -29,7 +29,7 @@ def read_channels_from_csv(file_path):
 if __name__ == '__main__':
     cnts = {}
     ambi = ambient.Ambient(44031, 'e857a6cd408e29b5')
-    channels = read_channels_from_csv('/home/pi/doc/private/python/youtube/youtube_get_subsc_list.txt')
+    channels = read_channels_from_csv('/home/pi/doc/private/python/youtube/subscriber_count_channel.txt')
     for i, channel_id in enumerate(channels):
         d = youtube_channel_detail(channel_id, YOUTUBE_API_KEY)
         cnts['d{}'.format(i + 1)] = d['statistics']['subscriberCount']
