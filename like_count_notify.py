@@ -101,7 +101,7 @@ def like_count_diff(json_file, channelId):
         for video_id in video_items_json:
             if video_id in video_items_json_old:
                 if video_items_json[video_id]['likes'] != video_items_json_old[video_id]['likes']:
-                    diff.append('%sの高評価：%d→%d'.format(video_items_json[video_id]['title'],
+                    diff.append('{}の高評価：{}→{}'.format(video_items_json[video_id]['title'],
                                 video_items_json_old[video_id]['likes'],
                                 video_items_json[video_id]['likes']))
             else:
