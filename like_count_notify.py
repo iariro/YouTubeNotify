@@ -3,9 +3,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-from os import getenv
 import json
 import googleapiclient.discovery
+import requests
 
 api_service_name = "youtube"
 api_version = "v3"
@@ -59,8 +59,7 @@ def get_video_items(youtube, video_id_list):
         request = youtube.videos().list(
             part="snippet,statistics",
             id=video_ids,
-            fields="items(id,snippet(title,description,publishedAt,thumbnails),statistics(viewCount,likeCount))"
-        )
+            fields="items(id,snippet(title,description,publishedAt,thumbnails),statistics(viewCount,likeCount))")
         response = request.execute()
         video_items.extend(response["items"])
 
@@ -76,10 +75,10 @@ def get_image_url(video_item):
 
 
 def convertVideoItems(video_items):
-    return { item["id"]: {
+    return {item["id"]: {
             'title': item["snippet"]["title"],
             'views': int(item["statistics"]["viewCount"]),
-            'likes': int(item["statistics"]["likeCount"]) } for item in video_items}
+            'likes': int(item["statistics"]["likeCount"])} for item in video_items}
 
 
 def like_count_diff(json_file, channelId):
@@ -103,12 +102,13 @@ def like_count_diff(json_file, channelId):
             if video_id in video_items_json_old:
                 if video_items_json[video_id]['likes'] != video_items_json_old[video_id]['likes']:
                     diff.append('%sの高評価：%d→%d'.format(video_items_json[video_id]['title'],
-                                                            video_items_json_old[video_id]['likes'],
-                                                            video_items_json[video_id]['likes']))
+                                video_items_json_old[video_id]['likes'],
+                                video_items_json[video_id]['likes']))
             else:
                 diff.append('%sの高評価：%d'.format(video_items_json[video_id]['title'],
-                                                    video_items_json[video_id]['likes']))
+                            video_items_json[video_id]['likes']))
     return diff
+
 
 def line_notify(message):
     token = "nPQEoC190nfvydJRbQmY75SY00Ygvt0CxsaXWoLTUUH"
@@ -116,6 +116,7 @@ def line_notify(message):
     headers = {"Authorization": "Bearer " + token}
     payload = {"message": 'YouTube:\n' + message}
     requests.post(url, headers=headers, data=payload)
+
 
 if __name__ == "__main__":
     json_file = '/home/pi/doc/private/python/youtube/like_count.json'
