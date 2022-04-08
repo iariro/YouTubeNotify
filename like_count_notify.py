@@ -2,6 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
+import os
 from os import getenv
 import json
 import googleapiclient.discovery
@@ -82,27 +83,31 @@ def convertVideoItems(video_items):
 
 
 def like_count_diff(json_file, channelId):
-    with open(json_file, 'r') as f:
-        video_items_json_old = json.load(f)
+    video_items_json_old = None
+    if os.path.isfile(json_file):
+        with open(json_file, 'r') as f:
+            video_items_json_old = json.load(f)
 
     youtube = get_authenticated_service('AIzaSyBuV44B4RZq90SnDs_GvCz7zXwrR34ixXI')
     uploads_playlist_id = get_uploads_playlist_id(youtube, channelId)
     video_id_list = get_video_id_in_playlist(youtube, uploads_playlist_id)
     video_items = get_video_items(youtube, video_id_list)
     video_items_json = convertVideoItems(video_items)
+
     with open(json_file, 'w') as f:
         json.dump(video_items_json, f, indent=4, ensure_ascii=False)
 
     diff = []
-    for video_id in video_items_json:
-        if video_id in video_items_json_old:
-            if video_items_json[video_id]['likes'] != video_items_json_old[video_id]['likes']:
-                diff.append('%sの高評価：%d→%d'.format(video_items_json[video_id]['title'],
-                                                        video_items_json_old[video_id]['likes'],
-                                                        video_items_json[video_id]['likes']))
-        else:
-            diff.append('%sの高評価：%d'.format(video_items_json[video_id]['title'],
-                                                video_items_json[video_id]['likes']))
+    if video_items_json_old:
+        for video_id in video_items_json:
+            if video_id in video_items_json_old:
+                if video_items_json[video_id]['likes'] != video_items_json_old[video_id]['likes']:
+                    diff.append('%sの高評価：%d→%d'.format(video_items_json[video_id]['title'],
+                                                            video_items_json_old[video_id]['likes'],
+                                                            video_items_json[video_id]['likes']))
+            else:
+                diff.append('%sの高評価：%d'.format(video_items_json[video_id]['title'],
+                                                    video_items_json[video_id]['likes']))
     return diff
 
 def line_notify(message):
@@ -113,6 +118,7 @@ def line_notify(message):
     requests.post(url, headers=headers, data=payload)
 
 if __name__ == "__main__":
-    json_file = '/home/pi/doc/private/python/youtube/my_videos.json'
+    json_file = '/home/pi/doc/private/python/youtube/like_count.json'
     diff = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA')
-    line_notify('\n'.join(diff)):
+    if len(diff) > 0:
+        line_notify('\n'.join(diff))
