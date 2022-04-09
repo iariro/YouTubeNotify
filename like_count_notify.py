@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import json
 import googleapiclient.discovery
 import requests
@@ -81,7 +82,7 @@ def convertVideoItems(video_items):
             'likes': int(item["statistics"]["likeCount"])} for item in video_items}
 
 
-def like_count_diff(json_file, channelId):
+def like_count_diff(json_file, channelId, regular):
     video_items_json_old = None
     if os.path.isfile(json_file):
         with open(json_file, 'r') as f:
@@ -93,8 +94,9 @@ def like_count_diff(json_file, channelId):
     video_items = get_video_items(youtube, video_id_list)
     video_items_json = convertVideoItems(video_items)
 
-    with open(json_file, 'w') as f:
-        json.dump(video_items_json, f, indent=4, ensure_ascii=False)
+    if regular:
+        with open(json_file, 'w') as f:
+            json.dump(video_items_json, f, indent=4, ensure_ascii=False)
 
     diff = []
     if video_items_json_old:
@@ -120,6 +122,10 @@ def line_notify(message):
 
 if __name__ == "__main__":
     json_file = '/home/pi/doc/private/python/youtube/like_count.json'
-    diff = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA')
+    regular = len(sys.argv) == 1 or sys.argv[1] != '-peek'
+    diff = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA', regular)
     if len(diff) > 0:
-        line_notify('\n'.join(diff))
+        if regular:
+            line_notify('\n'.join(diff))
+        else:
+            print('\n'.join(diff))
