@@ -144,7 +144,7 @@ if __name__ == "__main__":
     message = None
     if len(diff_likes) > 0:
         message = "高評価：\n" + '\n'.join(diff_likes)
-    if len(diff_views) > 0:
+    if not regular and len(diff_views) > 0:
         if message is None:
             message = ""
         else:
