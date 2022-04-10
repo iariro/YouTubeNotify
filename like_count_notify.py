@@ -111,16 +111,21 @@ def like_count_diff(json_file, channelId, regular):
                 diff_likes.append('{}：{}'.format(video_items_json[video_id]['title'],
                             video_items_json[video_id]['likes']))
 
+        view_total = 0
         for video_id in video_items_json:
             if video_id in video_items_json_old:
-                if video_items_json[video_id]['views'] != video_items_json_old[video_id]['views']:
-                    diff_views.append('{}：{}→{}'.format(video_items_json[video_id]['title'],
-                                video_items_json_old[video_id]['views'],
-                                video_items_json[video_id]['views']))
+                views_new = video_items_json[video_id]['views']
+                views_old = video_items_json_old[video_id]['views']
+                if views_new != views_old:
+                    view_total += views_new - views_old
+                    diff_views.append('{}：{}→{}({})'.format(video_items_json[video_id]['title'],
+                                views_old,
+                                views_new,
+                                views_new - views_old))
             else:
                 diff_views.append('{}：{}'.format(video_items_json[video_id]['title'],
                             video_items_json[video_id]['likes']))
-    return (diff_likes, diff_views)
+    return (diff_likes, diff_views, view_total)
 
 
 def line_notify(message):
@@ -134,7 +139,7 @@ def line_notify(message):
 if __name__ == "__main__":
     json_file = '/home/pi/doc/private/python/youtube/like_count.json'
     regular = len(sys.argv) == 1 or sys.argv[1] != '-peek'
-    (diff_likes, diff_views) = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA', regular)
+    (diff_likes, diff_views, view_total) = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA', regular)
     message = None
     if len(diff_likes) > 0:
         message = "高評価：\n" + '\n'.join(diff_likes)
@@ -149,3 +154,4 @@ if __name__ == "__main__":
             line_notify(message)
         else:
             print(message)
+            print('{}回'.format(view_total))
