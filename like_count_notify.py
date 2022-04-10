@@ -78,6 +78,7 @@ def get_image_url(video_item):
 def convertVideoItems(video_items):
     return {item["id"]: {
             'title': item["snippet"]["title"],
+            'publishedAt': item["snippet"]["publishedAt"],
             'views': int(item["statistics"]["viewCount"]),
             'likes': int(item["statistics"]["likeCount"])} for item in video_items}
 
@@ -101,30 +102,30 @@ def like_count_diff(json_file, channelId, regular):
     diff_likes = []
     diff_views = []
     if video_items_json_old:
-        for video_id in video_items_json:
+        for video_id, item in sorted(video_items_json.items(), key=lambda x: x[1]['publishedAt'], reverse=True):
             if video_id in video_items_json_old:
                 if video_items_json[video_id]['likes'] != video_items_json_old[video_id]['likes']:
                     diff_likes.append('{}：{}→{}'.format(video_items_json[video_id]['title'],
-                                video_items_json_old[video_id]['likes'],
-                                video_items_json[video_id]['likes']))
+                                      video_items_json_old[video_id]['likes'],
+                                      video_items_json[video_id]['likes']))
             else:
                 diff_likes.append('{}：{}'.format(video_items_json[video_id]['title'],
-                            video_items_json[video_id]['likes']))
+                                  video_items_json[video_id]['likes']))
 
         view_total = 0
-        for video_id in video_items_json:
+        for video_id, item in sorted(video_items_json.items(), key=lambda x: x[1]['publishedAt'], reverse=True):
             if video_id in video_items_json_old:
                 views_new = video_items_json[video_id]['views']
                 views_old = video_items_json_old[video_id]['views']
                 if views_new != views_old:
                     view_total += views_new - views_old
                     diff_views.append('{}：{}→{}({})'.format(video_items_json[video_id]['title'],
-                                views_old,
-                                views_new,
-                                views_new - views_old))
+                                      views_old,
+                                      views_new,
+                                      views_new - views_old))
             else:
                 diff_views.append('{}：{}'.format(video_items_json[video_id]['title'],
-                            video_items_json[video_id]['likes']))
+                                  video_items_json[video_id]['likes']))
     return (diff_likes, diff_views, view_total)
 
 
