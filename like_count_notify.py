@@ -98,18 +98,29 @@ def like_count_diff(json_file, channelId, regular):
         with open(json_file, 'w') as f:
             json.dump(video_items_json, f, indent=4, ensure_ascii=False)
 
-    diff = []
+    diff_likes = []
+    diff_views = []
     if video_items_json_old:
         for video_id in video_items_json:
             if video_id in video_items_json_old:
                 if video_items_json[video_id]['likes'] != video_items_json_old[video_id]['likes']:
-                    diff.append('{}の高評価：{}→{}'.format(video_items_json[video_id]['title'],
+                    diff_likes.append('{}：{}→{}'.format(video_items_json[video_id]['title'],
                                 video_items_json_old[video_id]['likes'],
                                 video_items_json[video_id]['likes']))
             else:
-                diff.append('%sの高評価：%d'.format(video_items_json[video_id]['title'],
+                diff_likes.append('{}：{}'.format(video_items_json[video_id]['title'],
                             video_items_json[video_id]['likes']))
-    return diff
+
+        for video_id in video_items_json:
+            if video_id in video_items_json_old:
+                if video_items_json[video_id]['views'] != video_items_json_old[video_id]['views']:
+                    diff_views.append('{}：{}→{}'.format(video_items_json[video_id]['title'],
+                                video_items_json_old[video_id]['views'],
+                                video_items_json[video_id]['views']))
+            else:
+                diff_views.append('{}：{}'.format(video_items_json[video_id]['title'],
+                            video_items_json[video_id]['likes']))
+    return (diff_likes, diff_views)
 
 
 def line_notify(message):
@@ -123,9 +134,18 @@ def line_notify(message):
 if __name__ == "__main__":
     json_file = '/home/pi/doc/private/python/youtube/like_count.json'
     regular = len(sys.argv) == 1 or sys.argv[1] != '-peek'
-    diff = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA', regular)
-    if len(diff) > 0:
-        if regular:
-            line_notify('\n'.join(diff))
+    (diff_likes, diff_views) = like_count_diff(json_file, 'UCVD_BTWC0dmWPZOWagpEeiA', regular)
+    message = None
+    if len(diff_likes) > 0:
+        message = "高評価：\n" + '\n'.join(diff_likes)
+    if len(diff_views) > 0:
+        if message is None:
+            message = ""
         else:
-            print('\n'.join(diff))
+            message += "\n"
+        message += "視聴数：\n" + '\n'.join(diff_views)
+    if message is not None:
+        if regular:
+            line_notify(message)
+        else:
+            print(message)
