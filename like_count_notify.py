@@ -2,6 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
+import re
 import os
 import sys
 import json
@@ -89,31 +90,32 @@ def like_count_diff(json_file, channel_id, regular):
     diff_likes = []
     diff_views = []
     if video_items_old:
+        view_total = 0
         video_id_sorted = sorted(video_items.items(), key=lambda x: x[1]['publishedAt'], reverse=True)
         for video_id, item in video_id_sorted:
             if video_id in video_items_old:
-                if video_items[video_id]['likes'] != video_items_old[video_id]['likes']:
-                    diff_likes.append('{}：{}→{}'.format(video_items[video_id]['title'],
-                                      video_items_old[video_id]['likes'],
-                                      video_items[video_id]['likes']))
-            else:
-                diff_likes.append('{}：{}'.format(video_items[video_id]['title'],
-                                  video_items[video_id]['likes']))
-
-        view_total = 0
-        for video_id, item in video_id_sorted:
-            if video_id in video_items_old:
+                likes_new = video_items[video_id]['likes']
+                likes_old = video_items_old[video_id]['likes']
                 views_new = video_items[video_id]['views']
                 views_old = video_items_old[video_id]['views']
+                title = video_items[video_id]['title']
+                m = re.match(r'(.*)を演奏.*', title)
+                if m:
+                    title = m.group(1)
+                else:
+                    m = re.match(r'(.*)とか演奏.*', title)
+                    if m:
+                        title = m.group(1)
+
+                if likes_new != likes_old:
+                    diff_likes.append('{}：{}→{}'.format(title, likes_old, likes_new))
                 if views_new != views_old:
                     view_total += views_new - views_old
-                    diff_views.append('{}：{}→{}({})'.format(video_items[video_id]['title'],
-                                      views_old,
-                                      views_new,
-                                      views_new - views_old))
+                    diff_views.append('{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old))
             else:
-                diff_views.append('{}：{}'.format(video_items[video_id]['title'],
-                                  video_items[video_id]['likes']))
+                diff_likes.append('{}：{}'.format(title, likes_new))
+                diff_views.append('{}：{}'.format(title, views_new))
+
     return (diff_likes, diff_views, view_total)
 
 
