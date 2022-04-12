@@ -141,6 +141,14 @@ if __name__ == "__main__":
         else:
             message += "\n\n"
         message += "視聴数：\n" + '\n'.join(diff_views)
+
+    if not regular or len(diff_views) > 0:
+        # -peek指定時または高評価がある場合、総視聴数を出力
+        # LINE通知モードで高評価がない場合、総視聴数は出力しない
+        if message is not None:
+            message += "\n\n"
+        message += "総視聴数：{}".format(view_total)
+
     if message is not None:
         if regular:
             line_notify(message)
