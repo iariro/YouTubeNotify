@@ -135,6 +135,7 @@ if __name__ == "__main__":
     message = None
     if len(diff_likes) > 0:
         message = "高評価：\n" + '\n'.join(diff_likes)
+
     if not regular and len(diff_views) > 0:
         if message is None:
             message = ""
@@ -142,10 +143,10 @@ if __name__ == "__main__":
             message += "\n\n"
         message += "視聴数：\n" + '\n'.join(diff_views)
 
-    if not regular or len(diff_views) > 0:
-        # -peek指定時または高評価がある場合、総視聴数を出力
-        # LINE通知モードで高評価がない場合、総視聴数は出力しない
-        if message is not None:
+    if view_total > 0:
+        if message is None:
+            message = ""
+        else:
             message += "\n\n"
         message += "総視聴数：{}".format(view_total)
 
