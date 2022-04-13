@@ -154,4 +154,3 @@ if __name__ == "__main__":
             line_notify(message)
         else:
             print(message)
-            print('{}回'.format(view_total))
