@@ -91,6 +91,7 @@ def like_count_diff(json_file, channel_id, regular):
     diff_views = []
     if video_items_old:
         view_total = 0
+        like_total = 0
         video_id_sorted = sorted(video_items.items(), key=lambda x: x[1]['publishedAt'], reverse=True)
         for video_id, item in video_id_sorted:
             if video_id in video_items_old:
@@ -111,12 +112,13 @@ def like_count_diff(json_file, channel_id, regular):
                     diff_likes.append('{}：{}→{}'.format(title, likes_old, likes_new))
                 if views_new != views_old:
                     view_total += views_new - views_old
+                    like_total += likes_new - likes_old
                     diff_views.append('{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old))
             else:
                 diff_likes.append('{}：{}'.format(title, likes_new))
                 diff_views.append('{}：{}'.format(title, views_new))
 
-    return (diff_likes, diff_views, view_total)
+    return (diff_likes, like_total, diff_views, view_total)
 
 
 def line_notify(message):
@@ -131,10 +133,10 @@ if __name__ == "__main__":
     json_file = '/home/pi/doc/private/python/youtube/like_count.json'
     channel_id = 'UCVD_BTWC0dmWPZOWagpEeiA'
     regular = len(sys.argv) == 1 or sys.argv[1] != '-peek'
-    (diff_likes, diff_views, view_total) = like_count_diff(json_file, channel_id, regular)
+    (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular)
     message = None
     if len(diff_likes) > 0:
-        message = "高評価：\n" + '\n'.join(diff_likes)
+        message = "高評価：\n{}\n総高評価上昇：{}\n".format('\n'.join(diff_likes), like_total)
 
     if not regular and len(diff_views) > 0:
         if message is None:
