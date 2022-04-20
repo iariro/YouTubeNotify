@@ -109,10 +109,10 @@ def like_count_diff(json_file, channel_id, regular):
                         title = m.group(1)
 
                 if likes_new != likes_old:
+                    like_total += likes_new - likes_old
                     diff_likes.append('{}：{}→{}'.format(title, likes_old, likes_new))
                 if views_new != views_old:
                     view_total += views_new - views_old
-                    like_total += likes_new - likes_old
                     diff_views.append('{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old))
             else:
                 diff_likes.append('{}：{}'.format(title, likes_new))
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular)
     message = None
     if len(diff_likes) > 0:
-        message = "高評価：\n{}\n総高評価上昇：{}".format('\n'.join(diff_likes), like_total)
+        message = "高評価：\n{}\n高評価上昇計：{}".format('\n'.join(diff_likes), like_total)
 
     if not regular and len(diff_views) > 0:
         if message is None:
