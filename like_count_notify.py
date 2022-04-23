@@ -110,7 +110,7 @@ def like_count_diff(json_file, channel_id, regular):
 
                 if likes_new != likes_old:
                     like_total += likes_new - likes_old
-                    diff_likes.append('{}：{}→{}'.format(title, likes_old, likes_new))
+                    diff_likes.append('{}：{}→{}({})'.format(title, likes_old, likes_new, likes_new - likes_old))
                 if views_new != views_old:
                     view_total += views_new - views_old
                     diff_views.append('{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old))
