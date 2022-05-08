@@ -94,12 +94,12 @@ def like_count_diff(json_file, channel_id, regular):
         like_total = 0
         video_id_sorted = sorted(video_items.items(), key=lambda x: x[1]['publishedAt'], reverse=True)
         for video_id, item in video_id_sorted:
+            title = video_items[video_id]['title']
+            likes_new = video_items[video_id]['likes']
+            views_new = video_items[video_id]['views']
             if video_id in video_items_old:
-                likes_new = video_items[video_id]['likes']
                 likes_old = video_items_old[video_id]['likes']
-                views_new = video_items[video_id]['views']
                 views_old = video_items_old[video_id]['views']
-                title = video_items[video_id]['title']
                 m = re.match(r'(.*)を演奏.*', title)
                 if m:
                     title = m.group(1)
@@ -115,6 +115,8 @@ def like_count_diff(json_file, channel_id, regular):
                     view_total += views_new - views_old
                     diff_views.append('{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old))
             else:
+                like_total += likes_new
+                view_total += views_new
                 diff_likes.append('{}：{}'.format(title, likes_new))
                 diff_views.append('{}：{}'.format(title, views_new))
 
