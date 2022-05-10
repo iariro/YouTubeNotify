@@ -6,6 +6,7 @@ import re
 import os
 import sys
 import json
+import datetime
 import googleapiclient.discovery
 import requests
 
@@ -159,3 +160,4 @@ if __name__ == "__main__":
             line_notify(message)
         else:
             print(message)
+            print(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
