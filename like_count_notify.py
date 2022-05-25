@@ -9,6 +9,7 @@ import json
 import datetime
 import googleapiclient.discovery
 import requests
+import unicodedata
 
 api_service_name = "youtube"
 api_version = "v3"
@@ -114,7 +115,12 @@ def like_count_diff(json_file, channel_id, regular):
                     diff_likes.append('{}：{}→{}({})'.format(title, likes_old, likes_new, likes_new - likes_old))
                 if views_new != views_old:
                     view_total += views_new - views_old
-                    diff_views.append('{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old))
+                    line = '{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old)
+                    count = len([c for c in line if unicodedata.east_asian_width(c) in "FWA"])
+                    view_count = (views_new - views_old)
+                    asta = ' '.join([('*' * 10) for i in range(view_count // 10)] + ['*' * (view_count % 10)])
+                    line = '{:{width}s}{}'.format(line, asta, width=60 - count)
+                    diff_views.append(line)
             else:
                 like_total += likes_new
                 view_total += views_new
