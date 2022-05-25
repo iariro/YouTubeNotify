@@ -119,7 +119,7 @@ def like_count_diff(json_file, channel_id, regular):
                     count = len([c for c in line if unicodedata.east_asian_width(c) in "FWA"])
                     view_count = (views_new - views_old)
                     asta = ' '.join([('*' * 10) for i in range(view_count // 10)] + ['*' * (view_count % 10)])
-                    line = '{:{width}s}{}'.format(line, asta, width=60 - count)
+                    line = '{:{width}s}{}'.format(line, asta, width=70 - count)
                     diff_views.append(line)
             else:
                 like_total += likes_new
