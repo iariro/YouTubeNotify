@@ -74,7 +74,7 @@ def get_video_items(youtube, video_id_list):
             'likes': int(item["statistics"]["likeCount"])} for item in video_items}
 
 
-def like_count_diff(json_file, channel_id, regular):
+def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
     video_items_old = None
     if os.path.isfile(json_file):
         with open(json_file, 'r') as f:
@@ -117,9 +117,11 @@ def like_count_diff(json_file, channel_id, regular):
                     view_total += views_new - views_old
                     line = '{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old)
                     count = len([c for c in line if unicodedata.east_asian_width(c) in "FWA"])
+                    if adjust_sonant_mark:
+                        count -= len([c for c in line if (ord(c) == 0x3099)]) * 2
                     view_count = (views_new - views_old)
                     asta = ' '.join([('*' * 10) for i in range(view_count // 10)] + ['*' * (view_count % 10)])
-                    line = '{:{width}s}{}'.format(line, asta, width=70 - count)
+                    line = '{:{width}s}{}'.format(line, asta, width=80 - count)
                     diff_views.append(line)
             else:
                 like_total += likes_new
@@ -141,8 +143,14 @@ def line_notify(message):
 if __name__ == "__main__":
     json_file = '/home/pi/doc/private/python/youtube/like_count.json'
     channel_id = 'UCVD_BTWC0dmWPZOWagpEeiA'
-    regular = len(sys.argv) == 1 or sys.argv[1] != '-peek'
-    (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular)
+    regular = True
+    adjust_sonant_mark = False
+    for arg in sys.argv[1:]:
+        if arg == '-peek':
+            regular = False
+        if arg == '-adjust-sonant-mark':
+            adjust_sonant_mark = True
+    (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular, adjust_sonant_mark)
     message = None
     if len(diff_likes) > 0:
         message = "高評価：\n{}\n高評価上昇計：{}".format('\n'.join(diff_likes), like_total)
