@@ -121,7 +121,7 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
                         count -= len([c for c in line if (ord(c) == 0x3099)]) * 2
                     view_count = (views_new - views_old)
                     asta = ' '.join([('*' * 10) for i in range(view_count // 10)] + ['*' * (view_count % 10)])
-                    line = '{:{width}s}{}'.format(line, asta, width=80 - count)
+                    line = '{:{width}s}{}'.format(line, asta, width=85 - count)
                     diff_views.append(line)
             else:
                 like_total += likes_new
