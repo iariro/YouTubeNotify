@@ -114,22 +114,29 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
                     like_total += likes_new - likes_old
                     diff_likes.append('{}：{}→{}({})'.format(title, likes_old, likes_new, likes_new - likes_old))
                 if views_new != views_old:
-                    view_total += views_new - views_old
-                    line = '{}：{}→{}({})'.format(title, views_old, views_new, views_new - views_old)
-                    count = len([c for c in line if unicodedata.east_asian_width(c) in "FWA"])
-                    if adjust_sonant_mark:
-                        count -= len([c for c in line if (ord(c) == 0x3099)]) * 2
-                    view_count = (views_new - views_old)
-                    asta = ' '.join([('*' * 10) for i in range(view_count // 10)] + ['*' * (view_count % 10)])
-                    line = '{:{width}s}{}'.format(line, asta, width=85 - count)
-                    diff_views.append(line)
+                    view_count = views_new - views_old
+                    view_total += view_count
+                    line = '{}：{}→{}({})'.format(title, views_old, views_new, view_count)
+                    diff_views.append({'title': line, 'view_count': view_count})
             else:
                 like_total += likes_new
                 view_total += views_new
                 diff_likes.append('{}：{}'.format(title, likes_new))
-                diff_views.append('{}：{}'.format(title, views_new))
+                line = '{}：{}'.format(title, views_new)
+                diff_views.append({'title': line, 'view_count': view_new})
 
-    return (diff_likes, like_total, diff_views, view_total)
+        max_len = max([len(entry['title']) for entry in diff_views])
+
+        diff_views2 = []
+        for entry in diff_views:
+            count = len([c for c in entry['title'] if unicodedata.east_asian_width(c) in "FWA"])
+            if adjust_sonant_mark:
+                count -= len([c for c in entry['title'] if (ord(c) == 0x3099)]) * 2
+            asta = ' '.join([('*' * 10) for i in range(entry['view_count'] // 10)] + ['*' * (entry['view_count'] % 10)])
+            line = '{:{width}s}{}'.format(entry['title'], asta, width=max_len + 5 - count)
+            diff_views2.append(line)
+
+    return (diff_likes, like_total, diff_views2, view_total)
 
 
 def line_notify(message):
