@@ -125,15 +125,19 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
                 line = '{}：{}'.format(title, views_new)
                 diff_views.append({'title': line, 'view_count': view_new})
 
-        max_len = max([len(entry['title']) for entry in diff_views])
+        for entry in diff_views:
+            column_adjust = len([c for c in entry['title'] if unicodedata.east_asian_width(c) in "FWA"])
+            if adjust_sonant_mark:
+                column_adjust -= len([c for c in entry['title'] if (ord(c) == 0x3099)]) * 2
+            entry['char_num'] = len(entry['title'])
+            entry['column_adjust'] = column_adjust
+
+        max_len = max([entry['char_num'] + entry['column_adjust'] for entry in diff_views])
 
         diff_views2 = []
         for entry in diff_views:
-            count = len([c for c in entry['title'] if unicodedata.east_asian_width(c) in "FWA"])
-            if adjust_sonant_mark:
-                count -= len([c for c in entry['title'] if (ord(c) == 0x3099)]) * 2
             asta = ' '.join([('*' * 10) for i in range(entry['view_count'] // 10)] + ['*' * (entry['view_count'] % 10)])
-            line = '{:{width}s}{}'.format(entry['title'], asta, width=max_len + 5 - count)
+            line = '{:{width}s}{}'.format(entry['title'], asta, width=max_len - entry['column_adjust'] + 5)
             diff_views2.append(line)
 
     return (diff_likes, like_total, diff_views2, view_total)
