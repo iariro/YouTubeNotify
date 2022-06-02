@@ -132,7 +132,7 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
             entry['char_num'] = len(entry['title'])
             entry['column_adjust'] = column_adjust
 
-        max_len = max([entry['char_num'] + entry['column_adjust'] for entry in diff_views])
+        max_len = max([entry['char_num'] + entry['column_adjust'] for entry in diff_views]) if len(diff_views) > 0 else 0
 
         diff_views2 = []
         for entry in diff_views:
