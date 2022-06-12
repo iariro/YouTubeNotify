@@ -97,20 +97,20 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
         video_id_sorted = sorted(video_items.items(), key=lambda x: x[1]['publishedAt'], reverse=True)
         for video_id, item in video_id_sorted:
             title = video_items[video_id]['title']
+            m = re.match(r'(.*)を演奏.*', title)
+            if m:
+                title = m.group(1)
+            else:
+                m = re.match(r'(.*)とか演奏.*', title)
+                if m:
+                    title = m.group(1)
+            title = title.replace('Return To Forever', 'RTF')
+
             likes_new = video_items[video_id]['likes']
             views_new = video_items[video_id]['views']
             if video_id in video_items_old:
                 likes_old = video_items_old[video_id]['likes']
                 views_old = video_items_old[video_id]['views']
-                m = re.match(r'(.*)を演奏.*', title)
-                if m:
-                    title = m.group(1)
-                else:
-                    m = re.match(r'(.*)とか演奏.*', title)
-                    if m:
-                        title = m.group(1)
-
-                title = title.replace('Return To Forever', 'RTF')
 
                 if likes_new != likes_old:
                     like_total += likes_new - likes_old
@@ -139,7 +139,7 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
         diff_views2 = []
         for entry in diff_views:
             asta = ' '.join([('*' * 10) for i in range(entry['view_count'] // 10)] + ['*' * (entry['view_count'] % 10)])
-            line = '{:{width}s}{}'.format(entry['title'], asta, width=max_len - entry['column_adjust'] + 2)
+            line = '{:{width}s}{}'.format(entry['title'], asta, width=max_len - entry['column_adjust'] + 3)
             diff_views2.append(line)
 
     return (diff_likes, like_total, diff_views2, view_total)
