@@ -125,6 +125,7 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
                 view_total += views_new
                 diff_likes.append('{}：{}'.format(title, likes_new))
                 line = '{}：({})'.format(title, views_new)
+                line = '{}：{}→{}({})'.format(title, 0, views_new, views_new)
                 diff_views.append({'title': line, 'view_count': views_new})
 
         for entry in diff_views:
