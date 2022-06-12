@@ -124,8 +124,8 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
                 like_total += likes_new
                 view_total += views_new
                 diff_likes.append('{}：{}'.format(title, likes_new))
-                line = '{}：{}'.format(title, views_new)
-                diff_views.append({'title': line, 'view_count': view_new})
+                line = '{}：({})'.format(title, views_new)
+                diff_views.append({'title': line, 'view_count': views_new})
 
         for entry in diff_views:
             column_adjust = len([c for c in entry['title'] if unicodedata.east_asian_width(c) in "FWA"])
