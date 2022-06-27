@@ -164,28 +164,33 @@ if __name__ == "__main__":
             regular = False
         if arg == '-adjust-sonant-mark':
             adjust_sonant_mark = True
-    (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular, adjust_sonant_mark)
-    message = None
-    if len(diff_likes) > 0:
-        message = "高評価：\n{}\n高評価上昇計：{}".format('\n'.join(diff_likes), like_total)
+    try:
+        (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular, adjust_sonant_mark)
 
-    if not regular and len(diff_views) > 0:
-        if message is None:
-            message = ""
-        else:
-            message += "\n\n"
-        message += "視聴数：\n" + '\n'.join(diff_views)
+        message = None
+        if len(diff_likes) > 0:
+            message = "高評価：\n{}\n高評価上昇計：{}".format('\n'.join(diff_likes), like_total)
 
-    if view_total > 0:
-        if message is None:
-            message = ""
-        else:
-            message += "\n\n"
-        message += "総視聴数：{}".format(view_total)
+        if not regular and len(diff_views) > 0:
+            if message is None:
+                message = ""
+            else:
+                message += "\n\n"
+            message += "視聴数：\n" + '\n'.join(diff_views)
 
-    if message is not None:
-        if regular:
-            line_notify(message)
-        else:
-            print(message)
-            print(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+        if view_total > 0:
+            if message is None:
+                message = ""
+            else:
+                message += "\n\n"
+            message += "総視聴数：{}".format(view_total)
+
+        if message is not None:
+            if regular:
+                line_notify(message)
+            else:
+                print(message)
+                print(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+
+    except googleapiclient.errors.HttpError as e:
+        print(e)
