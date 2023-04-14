@@ -162,8 +162,12 @@ if __name__ == "__main__":
     for arg in sys.argv[1:]:
         if arg == '-peek':
             regular = False
-        if arg == '-adjust-sonant-mark':
+        elif arg == '-adjust-sonant-mark':
             adjust_sonant_mark = True
+        else:
+            print('Usage: [-peek] [-adjust-sonant-mark]')
+            sys.exit(0)
+
     try:
         (diff_likes, like_total, diff_views, view_total) = like_count_diff(json_file, channel_id, regular, adjust_sonant_mark)
 

@@ -6,6 +6,7 @@ from googleapiclient.discovery import build
 
 YOUTUBE_API_KEY = 'AIzaSyBuV44B4RZq90SnDs_GvCz7zXwrR34ixXI'
 
+
 def youtube_channel_detail(channel_id, api_key):
     api_service_name = 'youtube'
     api_version = 'v3'
@@ -17,6 +18,7 @@ def youtube_channel_detail(channel_id, api_key):
 
     return search_response['items'][0]
 
+
 def read_channels_from_csv(file_path):
     channels = []
     with open(file_path) as f:
@@ -26,12 +28,17 @@ def read_channels_from_csv(file_path):
 
     return channels
 
+
 if __name__ == '__main__':
     cnts = {}
     ambi = ambient.Ambient(44031, 'e857a6cd408e29b5')
-    channels = read_channels_from_csv('/home/pi/doc/private/python/youtube/subscriber_count_channel.txt')
+    csv_file = '/home/pi/doc/private/python/youtube/subscriber_count_channel.txt'
+    channels = read_channels_from_csv(csv_file)
     for i, channel_id in enumerate(channels):
         d = youtube_channel_detail(channel_id, YOUTUBE_API_KEY)
         cnts['d{}'.format(i + 1)] = d['statistics']['subscriberCount']
-        #{'videoCount': '36', 'viewCount': '56262', 'subscriberCount': '338', ...}
-    ambi.send(cnts)
+        # {'videoCount': '36', 'viewCount': '56262', 'subscriberCount': '338', ...}
+    try:
+        ambi.send(cnts)
+    except:
+        pass
