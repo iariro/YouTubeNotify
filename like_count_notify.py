@@ -105,6 +105,8 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
                 if m:
                     title = m.group(1)
             title = title.replace('Return To Forever', 'RTF')
+            title = title.replace(' Pancake Breakfast', '')
+            title = title.replace('とQY70', '')
 
             likes_new = video_items[video_id]['likes']
             views_new = video_items[video_id]['views']
@@ -139,7 +141,8 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
 
         diff_views2 = []
         for entry in diff_views:
-            asta = ' '.join([('*' * 10) for i in range(entry['view_count'] // 10)] + ['*' * (entry['view_count'] % 10)])
+            view_count = entry['view_count']
+            asta = ' '.join([('*' * 10) for i in range(view_count // 10)] + ['*' * (view_count % 10)]) if view_count > 0 else ''
             line = '{:{width}s}{}'.format(entry['title'], asta, width=max_len - entry['column_adjust'] + 3)
             diff_views2.append(line)
 
