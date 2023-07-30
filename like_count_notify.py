@@ -107,6 +107,8 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
             title = title.replace('Return To Forever', 'RTF')
             title = title.replace(' Pancake Breakfast', '')
             title = title.replace('とQY70', '')
+            title = title.replace(' Shall We Play Today', '')
+            title = title.replace('とオトッキー', '')
 
             likes_new = video_items[video_id]['likes']
             views_new = video_items[video_id]['views']
