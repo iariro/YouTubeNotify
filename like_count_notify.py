@@ -109,6 +109,9 @@ def like_count_diff(json_file, channel_id, regular, adjust_sonant_mark):
             title = title.replace('とQY70', '')
             title = title.replace(' Shall We Play Today', '')
             title = title.replace('とオトッキー', '')
+            title = title.replace(' Schizoid Man', '')
+            title = title.replace('を前奏だけ演奏してみた', '')
+            title = title.replace(' You Like', '')
 
             likes_new = video_items[video_id]['likes']
             views_new = video_items[video_id]['views']
